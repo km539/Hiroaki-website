@@ -1,37 +1,42 @@
-<?php 
+<?php
+    //　- 確認画面 -
+    if ($_SERVER["REQUEST_METHOD"] == "POST"){
     //$name = $_POST['name'];
     //$email= $_POST['mail'];
     //$message= $_POST['message'];
-    $name = htmlspecialchars($_POST['name'],ENT_QUOTES);
-    $email = htmlspecialchars($_POST['mail'],ENT_QUOTES);
-    $message = htmlspecialchars($_POST['message'],ENT_QUOTES);
-    //$mail_body = "";
+    $name = htmlspecialchars($_POST['name'],ENT_QUOTES, "UTF-8");
+    $email = htmlspecialchars($_POST['mail'],ENT_QUOTES, "UTF-8");
+    $message = htmlspecialchars($_POST['message'],ENT_QUOTES, "UTF-8");
+    }
+    if(isset($_POST['submit'])){
+        //メールを送信する
+        $to = "info@terada-hiroaki-officialsite.com";
+        $subject = "お問い合わせが届きました";
+        $header = "From: noreply@terada-hiroaki-officialsite.com";
+        $body = <<<EOF
+以下の内容が送信されました。
 
-    if(isset($_POST['button'])) {
-        echo "This Button is selected";
-　　　// メールを送信する
-    mb_language("Japanese");
-    mb_internal_encoding("UTF-8");　　　
-    $mail_body = "以下の内容が送信されました."."\n"."\n".
-            "【お名前】"."\n".
-            $name."\n"."\n".
-            "【メールアドレス】"."\n".
-            $email."\n"."\n".
-            "【内容】"."\n".
-            $message."\n"."\n".;
+===================================================
+【 お名前 】
+ {$name}
 
-    $to = 'kyoji.gunners@gmail.com';
-    $from = $email;
-    $subject = 'お問い合わせが届きました';
- 
-    mb_send_mail($to, $subject, $mail_body, "From: {$from}");
+【 メール 】
+ {$email}
 
+【 内容 】
+ {$message}
+===================================================
+EOF;
+
+        mail($to, $subject, $body, $header);
+        header("Location: https://terada-hiroaki-officialsite.com");
+        exit;
     }
 ?>
 
 
 <!DOCTYPE html>
-<html lang="jp">
+<html lang="ja">
     <head>
        <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -42,7 +47,7 @@
 
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;600;700&display=swap" rel="stylesheet">
 
-        <!------font awesome ------------------->
+        <!------ font awesome ------------------->
         <script src="https://kit.fontawesome.com/1325c2723b.js" crossorigin="anonymous"></script>
 
         <!-- Bootstrap CSS -->
@@ -56,7 +61,12 @@
     <section id="confirm">
     <div class="container p-3 mb-2 bg-light text-dark confirm-form">
         <div class="confirm-box">
-        <h1>以下の内容で送信してよろしですか？</h1>
+        <form action="contact.php" method="post">
+        <input type="hidden" name="name" value="<?php echo $name; ?>">
+        <input type="hidden" name="email" value="<?php echo $email; ?>">
+        <input type="hidden" name="message" value="<?php echo $message; ?>"> 
+        <h1>お問い合わせ 内容確認</h1>
+        <p>お問い合わせ内容はこちらで宜しいでしょうか？<br>よろしければ「送信する」ボタンを押して下さい。</p>
         <table class="table">
             <tbody>
                 <tr>
@@ -69,28 +79,17 @@
                 </tr>
                 <tr>
                     <th>ご用件：</th>
-                    <td><?= $message ?></td>
+                    <td><?= nl2br($message) ?></td>
                 </tr>
             </tbody>
         </table>
-        <form method="post">
         <input type="button" value="内容を修正する" onclick="history.back(-1)">
-          
-        <input type="submit" name="button"
-                value="送信する"/>
+        <button type="submit" name="submit">送信する</button>
         </form>
-        <a href="../index.html">戻る</a>
-        <button type="submit" id="clicked">送信する</button>
         </div>
     </div>
     </section>
 
-    <script>
-        const myfunc = document.getElementById("clicked");
-        myfunc.addEventListener("click", function() {
-            console.log("clicked button");
-        });
-    </script>
     </body>
 
 
